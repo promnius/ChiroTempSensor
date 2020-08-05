@@ -1,4 +1,8 @@
 
+// this library implements buttons with timing for press and hold
+// there may be a minor bug where an extra button press is picked up
+// around changing the inversion mode
+
 #include "Buttons.h"
 
 ezButton::ezButton(int pin) {
