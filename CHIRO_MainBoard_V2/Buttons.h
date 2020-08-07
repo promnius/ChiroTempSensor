@@ -19,12 +19,15 @@ class ezButton
 		unsigned long lngCount;
 		int intCountMode;
     int intInversion;
+    unsigned long lngDoubleTapGapThreshold;
 
 		int intRawState;
 		int intState;  // the previous steady state from the input pin, used to detect pressed and released event
 		bool booHasReadEdge;
 
-		unsigned long lngPreviousStateTime; // the length of time the previous state existed for.
+		unsigned long LNGpreviousStateTime[6]; // the length of time the previous state existed for. we record a handful in case you
+    // want to do advanced pattern detection, but they're not used right now.
+    int intPreviousStatePointer;
 		unsigned long lngLastTransistionTime; // the last time the output pin was toggled. NOTE this is not natively a duration like
 			// lngPreviousStateTime, but rather a timestamp. 
 
@@ -45,6 +48,8 @@ class ezButton
 		unsigned long getCount(void);
 		void resetCount(void);
 		void update(void);
+    bool getDoubleTap(void);
+    void setDoupleTapThreshold(int thresh);
 };
 
 #endif

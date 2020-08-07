@@ -1,8 +1,5 @@
 
 // todo: 
-// time update rate- find ways to make it faster?
-// double check battery math- a fully charged battery should give a full bar, 
-  // low battery should give warning before shutting off
 // test buzzer/ add to specific modes/ add audio light
 // finish fixing ads1220 library, move it to this project
 // Comments
@@ -24,7 +21,7 @@ void setup() {
   lngShutOffTimer = millis();
 
   externalADC.begin(pinADS1220CS,pinADS1220DRDY);
-  externalADC.set_data_rate(DR_45SPS);
+  externalADC.set_data_rate(DR_175SPS);
   externalADC.set_pga_gain(PGA_GAIN_128);
   externalADC.set_conv_mode_single_shot();
   externalADC.select_mux_channels(MUX_AIN0_AIN1);
@@ -42,14 +39,17 @@ void setup() {
 
   delay(500);
   checkBatteryLevel();
+  Serial.print("Battery Voltage: "); Serial.println(fltBatSense);
   animateBatteryVoltageOnLEDs();
   checkShutOffConditions();
+  calibrateSensorOffsets();
   
   delay(500);
   Serial.println("Setup Finished!");
 }
 
 void loop() {
+  lngLoopTimerStart = millis();
   if (millis() - lngShutOffTimer > 300000){ // 5 minutes
     digitalWrite(pinSTAYON, LOW); // shut off, not reversible without human interaction
   }
@@ -61,15 +61,36 @@ void loop() {
   //delay(300); // not needed with the sigma delta adc- it takes long enough to perform conversions!
 
   checkButtons();
+
+  lngLoopTimerEnd = millis();
+  
   checkBatteryLevel();
   checkShutOffConditions();
 
+  
+
   updateLEDs();
   updateAudio();
+
+  
+
+  //plotTiming();
+
+}
+
+void plotTiming(){
+  LNGloopTimer[intLoopTimerPointer] = lngLoopTimerEnd-lngLoopTimerStart;
+  intLoopTimerPointer ++;
+  if (intLoopTimerPointer > 499){
+    for (int i = 0; i < 500; i ++){
+      Serial.println(LNGloopTimer[i]);
+    }
+    intLoopTimerPointer = 0;
+  }
 }
 
 void animateBatteryVoltageOnLEDs(){
-  intLedPosition = (int)((fltBatSense-3.0)*17.85); // map 2.8V-4.2V to 25 pixels
+  intLedPosition = (int)((fltBatSense-2.8)*17.85); // map 2.8V-4.2V to 25 pixels
   if(intLedPosition>24){intLedPosition=24;}
   leds.clear();
   for(int i = 0; i<=intLedPosition;i++){
@@ -84,8 +105,8 @@ void animateBatteryVoltageOnLEDs(){
 
 void updateAudio(){
   int audioLevel = 0;
-  if (abs(fltTempDiffAve)>8 && booAudioMode == true){
-    audioLevel = (int)20*(abs(fltTempDiffAve) - 8)+50;
+  if (abs(fltTempDiffAve)>8 && booModeAudio == true){
+    audioLevel = (int)20*(abs(fltTempDiffAve) - 8)+250;
     if (audioLevel > 1000){audioLevel = 1000;}
     analogWriteFrequency(pinBUZZER, audioLevel);
     analogWrite(pinBUZZER, 128);
@@ -116,9 +137,9 @@ void updateLEDs(){
   if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve*3.0, GREEN_CHANNEL);ledsSetChannel(25, GREEN_CHANNEL,intMaxBrightness);}
   if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve, BLUE_CHANNEL);ledsSetChannel(25, BLUE_CHANNEL,intMaxBrightness);}
   if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/3.0, RED_CHANNEL);ledsSetChannel(25, RED_CHANNEL,intMaxBrightness);}
-  if (intMode == 4 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAve*3.0, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
-  if (intMode == 5 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAve, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
-  if (intMode == 6 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAve/3.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
+  if (intMode == 4 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp*3.0, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
+  if (intMode == 5 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
+  if (intMode == 6 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp/3.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
   gammaCorrect();
   leds.show();
   if (booModeAudio == true){digitalWrite(pinAUDIOLED,LOW);}

@@ -42,10 +42,13 @@ float convertADCToMicroV(int32_t i32data)
 
 void computeAverages(){
   fltTempDiffAve = 0;
-  for(int i = 0; i<6; i++){
+  fltTempDiffAveAmp = 0;
+  for(int i = 0; i<NUMAVERAGES; i++){
     fltTempDiffAve += FLTtempDiffHist[i];
+    fltTempDiffAveAmp += FLTtempDiffHistAmp[i];
   }
-  fltTempDiffAve = fltTempDiffAve/6;
+  fltTempDiffAve = fltTempDiffAve/NUMAVERAGES;
+  fltTempDiffAveAmp = fltTempDiffAveAmp/NUMAVERAGES;
 }
 
 void ledsSetChannel(int pixel, int channel, int value){
@@ -68,42 +71,72 @@ void setupPinModes(){
 void sampleADCs(){
   //Serial.println(analogRead(pinANALOGDIFFAMP)); // to use the old analog amp input
   externalADC.select_mux_channels(MUX_AIN0_AIN1);
-  delay(2);
+  delayMicroseconds(100);
   adc_data1 = externalADC.Read_SingleShot_WaitForData();
   fltThermocouple1Voltage = convertADCToMicroV(adc_data1);
   externalADC.select_mux_channels(MUX_AIN2_AIN3);
-  delay(2);
+  delayMicroseconds(100);
   adc_data2 = externalADC.Read_SingleShot_WaitForData();
   fltThermocouple2Voltage = convertADCToMicroV(adc_data2);
 
+  lngAmpRaw = adc->analogRead(pinANALOGDIFFAMP);
+  fltTempDiffAmp = -((((float)lngAmpRaw)/((float)pow(2,intADCResolution))*1000*3.3)-(3.3*1000/2));
+  fltTempDiffAmp -= fltADCDiffOffsetAmp;
+
   //Serial.print("Thermocouple Voltages: "); Serial.print(fltThermocouple1Voltage);Serial.print(", ");
   //Serial.print(fltThermocouple2Voltage); Serial.println();
+  //Serial.print(lngAmpRaw);Serial.print(",");Serial.print(fltTempDiffAmp);Serial.println();
 
   fltTempDiff = fltThermocouple1Voltage + fltThermocouple2Voltage; // addition because one is negative
+  fltTempDiff -= fltADCDiffOffset;
 
   FLTtempDiffHist[intTempDiffHistPointer] = fltTempDiff;
+  FLTtempDiffHistAmp[intTempDiffHistPointer] = fltTempDiffAmp;
   intTempDiffHistPointer ++;
-  if (intTempDiffHistPointer>5){intTempDiffHistPointer=0;}
+  if (intTempDiffHistPointer>NUMAVERAGES-1){intTempDiffHistPointer=0;}
   computeAverages();
+}
+
+void calibrateSensorOffsets(){
+  leds.clear();
+  leds.setPixel(0,GREEN); leds.setPixel(4,BLUE); leds.setPixel(8,RED); leds.setPixel(12,WHITE); 
+  leds.setPixel(16,RED); leds.setPixel(20,BLUE);  leds.setPixel(24,GREEN);
+  leds.show();
+  delay(500);
+  fltADCDiffOffset = 0;
+  fltADCDiffOffsetAmp = 0;
+  for (int i = 0; i < NUMAVERAGES; i ++){
+    sampleADCs();
+  }
+  fltADCDiffOffset = fltTempDiffAve;
+  fltADCDiffOffsetAmp = fltTempDiffAveAmp;
+  Serial.print("Calibrated Differential Offset (external ADC): "); Serial.print(fltADCDiffOffset); Serial.println("uV");
+  Serial.print("Calibrated Differential Offset (internal ADC + amp): "); Serial.print(fltADCDiffOffsetAmp); Serial.println("uV");
+  delay(500);
 }
 
 void checkButtons(){
   modeButton.update();
   if (modeButton.getPressingEdge()==true){ // button pressed!
     lngShutOffTimer = millis(); // reset the turn-off timer, since we just used a button
-    intMode += 1;
-    if (intMode > 7){intMode = 0;}
+    intMode += 1; if (intMode > 7){intMode = 0;}
     Serial.println("Mode Button Pressed!");
     booCheckButtonHeld = true;
+    if (modeButton.getDoubleTap() == true){
+      Serial.println("Double tap detected, running calibration routine!");
+      calibrateSensorOffsets();
+    }
   }
-  if (modeButton.getStateTime() > 3000 && booCheckButtonHeld == true){
+  if (modeButton.getStateTime() > 3000 && booCheckButtonHeld == true && modeButton.getState() == 1){
     booCheckButtonHeld = false;
     booModeAudio = !booModeAudio;
-    Serial.println("Audio State Changed!");
+    Serial.println("Audio State Changed! (backing up 1 mode too, since the user didn't mean to change mode).");
+    intMode -= 1;  if (intMode < 0){intMode = 7;}
   }
   if (modeButton.getStateTime() > 6000 && modeButton.getState() == 1){
     digitalWrite(pinSTAYON, LOW); // shut off, not reversible without human interaction
   }
+  if (modeButton.getState() == 0){booCheckButtonHeld = false;}
 }
 
 // DESTRUCTIVELY gamma corrects all LEDs. Only works if you re-render from scratch every frame!
@@ -121,7 +154,7 @@ void checkBatteryLevel(){
 }
 
 void checkShutOffConditions(){
-  if (fltBatSense < 3.0){digitalWrite(pinSTAYON, LOW);} // shut off, not reversible without human interaction
+  if (fltBatSense < 2.95){digitalWrite(pinSTAYON, LOW);} // shut off, not reversible without human interaction
 }
 
 #endif

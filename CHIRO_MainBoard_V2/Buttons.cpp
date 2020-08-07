@@ -6,15 +6,18 @@
 #include "Buttons.h"
 
 ezButton::ezButton(int pin) {
+  intPreviousStatePointer = 0;
 	btnPin = pin;
 	lngDebounceTime = 20;
 	lngCount = 0;
 	intCountMode = COUNT_PRESSING;
 	booHasReadEdge = true;
+  lngDoubleTapGapThreshold = 150;
 
   intInversion = LOW_PRESSED;
 
-	lngPreviousStateTime = 0;
+  for (int i = 0; i < 6; i ++){LNGpreviousStateTime[i] = 0;}
+  
 	lngLastTransistionTime = millis();
 
 	pinMode(btnPin, INPUT_PULLUP);
@@ -36,7 +39,7 @@ unsigned long ezButton::getStateTime(void) {
 }
 
 unsigned long ezButton::getLastStateTime(void) {
-	return(lngPreviousStateTime);
+	return(LNGpreviousStateTime[intPreviousStatePointer]);
 }
 
 int ezButton::getStateRaw(void) {
@@ -49,6 +52,14 @@ void ezButton::setLogicInversion(int invert) {
 
 bool ezButton::getPressingEdge(void) {
 	if(intState == HIGH && booHasReadEdge == false){
+        Serial.print("Button Timer Buffer: ");
+    Serial.print(LNGpreviousStateTime[0]);Serial.print(',');
+    Serial.print(LNGpreviousStateTime[1]);Serial.print(',');
+    Serial.print(LNGpreviousStateTime[2]);Serial.print(',');
+    Serial.print(LNGpreviousStateTime[3]);Serial.print(',');
+    Serial.print(LNGpreviousStateTime[4]);Serial.print(',');
+    Serial.print(LNGpreviousStateTime[5]);Serial.print(". Pointer: "); 
+    Serial.println(intPreviousStatePointer);
 		booHasReadEdge = true;
 		return true;
 	}else{return false;}
@@ -73,6 +84,15 @@ void ezButton::resetCount(void) {
 	lngCount = 0;
 }
 
+bool ezButton::getDoubleTap(void){
+  if (LNGpreviousStateTime[intPreviousStatePointer] < lngDoubleTapGapThreshold){return true;}
+  else {return false;}
+}
+
+void ezButton::setDoupleTapThreshold(int thresh){
+  lngDoubleTapGapThreshold = thresh;
+}
+
 void ezButton::update(void) {
 	intRawState = digitalRead(btnPin);
   if (intInversion == LOW_PRESSED){intRawState = !intRawState;}
@@ -83,7 +103,8 @@ void ezButton::update(void) {
 
 	// If the switch/button changed, and the time has been long enough
 	if (intRawState != intState && (millis() - lngLastTransistionTime)>lngDebounceTime) {
-		lngPreviousStateTime = millis() - lngLastTransistionTime;
+    intPreviousStatePointer ++; if (intPreviousStatePointer > 5){intPreviousStatePointer = 0;}
+		LNGpreviousStateTime[intPreviousStatePointer] = millis() - lngLastTransistionTime;
 		lngLastTransistionTime = millis();
 		booHasReadEdge = false;
 		intState = intRawState;

@@ -24,9 +24,13 @@ int pinBOARDTEMP = 19;
 // VARIABLE DECLARATIONS
 unsigned long lngHeartbeatTimer = 0;
 unsigned long lngShutOffTimer = 0;
+unsigned long lngLoopTimerStart = 0;
+unsigned long lngLoopTimerEnd = 0;
+unsigned long LNGloopTimer[500];
+int intLoopTimerPointer = 0;
 boolean booHeartbeatState = false;
 int intMode = 0;
-int intADCResolution = 12;
+int intADCResolution = 16;
 float fltThermocouple1Voltage = 0;
 float fltThermocouple2Voltage = 0;
 long lngBatSense = 0;
@@ -35,12 +39,19 @@ bool booModeAudio = 0;
 bool booCheckButtonHeld = false;
 float fltTempDiff = 0;
 int intDedIntensity = 0;
-float FLTtempDiffHist[6];
+#define NUMAVERAGES 10
+float FLTtempDiffHist[NUMAVERAGES];
 int intTempDiffHistPointer = 0;
 float fltTempDiffAve = 0;
 long intLedPosition = 0;
 int intLedIntensity = 0;
 int intMaxBrightness = 160;
+float FLTtempDiffHistAmp[NUMAVERAGES];
+float fltTempDiffAmp = 0;
+long lngAmpRaw = 0;
+float fltTempDiffAveAmp = 0;
+float fltADCDiffOffset = 0;
+float fltADCDiffOffsetAmp = 0;
 
 ezButton modeButton(pinMODEBUTTON);
 ADC *adc = new ADC();
@@ -87,6 +98,7 @@ WS2812Serial leds(numled, displayMemory, drawingMemory, pinLEDDATA, WS2812_GRB);
 #define VREF_ADC         2.048            // Internal reference of 2.048V
 #define VFSR         VREF_ADC/PGA
 #define FULL_SCALE   (((long int)1<<23)-1)
+
 Protocentral_ADS1220 externalADC;
 int32_t adc_data1 = 0;
 int32_t adc_data2 = 0;
