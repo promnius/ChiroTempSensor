@@ -89,34 +89,39 @@ void setupPinModes(){
 
 void sampleADCs(){
   //Serial.println(analogRead(pinANALOGDIFFAMP)); // to use the old analog amp input
-  externalADC.select_mux_channels(MUX_AIN0_AIN1);
-  delayMicroseconds(100);
-  adc_data1 = externalADC.Read_SingleShot_WaitForData();
-  fltThermocouple1Voltage = convertADCToMicroV(adc_data1);
-  externalADC.select_mux_channels(MUX_AIN2_AIN3);
-  delayMicroseconds(100);
-  adc_data2 = externalADC.Read_SingleShot_WaitForData();
-  fltThermocouple2Voltage = convertADCToMicroV(adc_data2);
-
-  lngAmpRaw = adc->analogRead(pinANALOGDIFFAMP);
-  fltTempDiffAmp = -((((float)lngAmpRaw)/((float)pow(2,intADCResolution))*1000*3.3)-(3.3*1000/2));
-  fltTempDiffAmp -= fltADCDiffOffsetAmp;
-
+  if (intMode<4 || booCalibration){
+    externalADC.select_mux_channels(MUX_AIN0_AIN1);
+    delayMicroseconds(100);
+    adc_data1 = externalADC.Read_SingleShot_WaitForData();
+    fltThermocouple1Voltage = convertADCToMicroV(adc_data1);
+    externalADC.select_mux_channels(MUX_AIN2_AIN3);
+    delayMicroseconds(100);
+    adc_data2 = externalADC.Read_SingleShot_WaitForData();
+    fltThermocouple2Voltage = convertADCToMicroV(adc_data2);
+    fltTempDiff = fltThermocouple1Voltage + fltThermocouple2Voltage; // addition because one is negative
+    fltTempDiff -= fltADCDiffOffset;
+    FLTtempDiffHist[intTempDiffHistPointer] = fltTempDiff;
+  }
+  if (intMode>3 || booCalibration){
+    lngAmpRaw = 0;
+    for (int i = 0; i < 64; i ++){lngAmpRaw += adc->analogRead(pinANALOGDIFFAMP);}
+    lngAmpRaw = lngAmpRaw/64;
+    fltTempDiffAmp = -((((float)lngAmpRaw)/((float)pow(2,intADCResolution))*1000*3.3)-(3.3*1000/2));
+    fltTempDiffAmp -= fltADCDiffOffsetAmp;
+    FLTtempDiffHistAmp[intTempDiffHistPointer] = fltTempDiffAmp;
+  }
+  
   //Serial.print("Thermocouple Voltages: "); Serial.print(fltThermocouple1Voltage);Serial.print(", ");
   //Serial.print(fltThermocouple2Voltage); Serial.println();
   //Serial.print(lngAmpRaw);Serial.print(",");Serial.print(fltTempDiffAmp);Serial.println();
 
-  fltTempDiff = fltThermocouple1Voltage + fltThermocouple2Voltage; // addition because one is negative
-  fltTempDiff -= fltADCDiffOffset;
-
-  FLTtempDiffHist[intTempDiffHistPointer] = fltTempDiff;
-  FLTtempDiffHistAmp[intTempDiffHistPointer] = fltTempDiffAmp;
   intTempDiffHistPointer ++;
   if (intTempDiffHistPointer>NUMAVERAGES-1){intTempDiffHistPointer=0;}
   computeAverages();
 }
 
 void calibrateSensorOffsets(){
+  booCalibration = true;
   leds.clear();
   leds.setPixel(0,GREEN); leds.setPixel(4,BLUE); leds.setPixel(8,RED); leds.setPixel(12,WHITE); 
   leds.setPixel(16,RED); leds.setPixel(20,BLUE);  leds.setPixel(24,GREEN);
@@ -132,6 +137,7 @@ void calibrateSensorOffsets(){
   printCalibrationOffsets();
   delay(500);
   saveCalibration();
+  booCalibration = false;
 }
 
 void checkButtons(){
@@ -148,13 +154,13 @@ void checkButtons(){
       calibrateSensorOffsets();
     }
   }
-  if (modeButton.getStateTime() > 3000 && booCheckButtonHeld == true && modeButton.getState() == 1){
+  if (modeButton.getStateTime() > 2000 && booCheckButtonHeld == true && modeButton.getState() == 1){
     booCheckButtonHeld = false;
     booModeAudio = !booModeAudio;
     Serial.println("Audio State Changed! (backing up 1 mode too, since the user didn't mean to change mode).");
     intMode -= 1;  if (intMode < 0){intMode = 7;}
   }
-  if (modeButton.getStateTime() > 6000 && modeButton.getState() == 1){
+  if (modeButton.getStateTime() > 4000 && modeButton.getState() == 1){
     digitalWrite(pinSTAYON, LOW); // shut off, not reversible without human interaction
   }
   if (modeButton.getState() == 0){booCheckButtonHeld = false;}

@@ -52,7 +52,7 @@ long lngAmpRaw = 0;
 float fltTempDiffAveAmp = 0;
 float fltADCDiffOffset = 0;
 float fltADCDiffOffsetAmp = 0;
-
+bool booCalibration = false;
 ezButton modeButton(pinMODEBUTTON);
 ADC *adc = new ADC();
 
