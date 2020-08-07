@@ -105,15 +105,19 @@ void animateBatteryVoltageOnLEDs(){
 
 void updateAudio(){
   int audioLevel = 0;
-  if (abs(fltTempDiffAve)>8 && booModeAudio == true){
+  if (abs(fltTempDiffAve)>8 && intMode < 4 && booModeAudio == true){
     audioLevel = (int)20*(abs(fltTempDiffAve) - 8)+250;
+    if (audioLevel > 1000){audioLevel = 1000;}
+    analogWriteFrequency(pinBUZZER, audioLevel);
+    analogWrite(pinBUZZER, 128);
+  }else if (abs(fltTempDiffAveAmp)>8 && booModeAudio == true){
+    audioLevel = (int)20*(abs(fltTempDiffAveAmp) - 8)+250;
     if (audioLevel > 1000){audioLevel = 1000;}
     analogWriteFrequency(pinBUZZER, audioLevel);
     analogWrite(pinBUZZER, 128);
   }else{
     analogWrite(pinBUZZER, 0);
   }
-
 }
 
 void addNeedleGaugeChannel(float barGraphValue, int colorChannel){

@@ -8,11 +8,11 @@
 ezButton::ezButton(int pin) {
   intPreviousStatePointer = 0;
 	btnPin = pin;
-	lngDebounceTime = 20;
+	lngDebounceTime = 40;
 	lngCount = 0;
 	intCountMode = COUNT_PRESSING;
 	booHasReadEdge = true;
-  lngDoubleTapGapThreshold = 100;
+  lngDoubleTapGapThreshold = 150;
 
   intInversion = LOW_PRESSED;
 

@@ -161,6 +161,7 @@ void checkButtons(){
     intMode -= 1;  if (intMode < 0){intMode = 7;}
   }
   if (modeButton.getStateTime() > 4000 && modeButton.getState() == 1){
+    Serial.println("WE ARE TURNING OFF");
     digitalWrite(pinSTAYON, LOW); // shut off, not reversible without human interaction
   }
   if (modeButton.getState() == 0){booCheckButtonHeld = false;}
