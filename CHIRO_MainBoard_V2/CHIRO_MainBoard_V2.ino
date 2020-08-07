@@ -1,6 +1,5 @@
 
 // todo: 
-// test buzzer/ add to specific modes/ add audio light
 // finish fixing ads1220 library, move it to this project
 // Comments
 // STRETCH GOAL add separate temp sensor mode (modes 4-7) (possibly includes extracting temp data from ADC)
@@ -42,7 +41,8 @@ void setup() {
   Serial.print("Battery Voltage: "); Serial.println(fltBatSense);
   animateBatteryVoltageOnLEDs();
   checkShutOffConditions();
-  calibrateSensorOffsets();
+  loadCalibration();
+  //calibrateSensorOffsets();
   
   delay(500);
   Serial.println("Setup Finished!");

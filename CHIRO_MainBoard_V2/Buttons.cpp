@@ -12,7 +12,7 @@ ezButton::ezButton(int pin) {
 	lngCount = 0;
 	intCountMode = COUNT_PRESSING;
 	booHasReadEdge = true;
-  lngDoubleTapGapThreshold = 150;
+  lngDoubleTapGapThreshold = 100;
 
   intInversion = LOW_PRESSED;
 
@@ -52,14 +52,14 @@ void ezButton::setLogicInversion(int invert) {
 
 bool ezButton::getPressingEdge(void) {
 	if(intState == HIGH && booHasReadEdge == false){
-        Serial.print("Button Timer Buffer: ");
-    Serial.print(LNGpreviousStateTime[0]);Serial.print(',');
-    Serial.print(LNGpreviousStateTime[1]);Serial.print(',');
-    Serial.print(LNGpreviousStateTime[2]);Serial.print(',');
-    Serial.print(LNGpreviousStateTime[3]);Serial.print(',');
-    Serial.print(LNGpreviousStateTime[4]);Serial.print(',');
-    Serial.print(LNGpreviousStateTime[5]);Serial.print(". Pointer: "); 
-    Serial.println(intPreviousStatePointer);
+    //Serial.print("Button Timer Buffer: ");
+    //Serial.print(LNGpreviousStateTime[0]);Serial.print(',');
+    //Serial.print(LNGpreviousStateTime[1]);Serial.print(',');
+    //Serial.print(LNGpreviousStateTime[2]);Serial.print(',');
+    //Serial.print(LNGpreviousStateTime[3]);Serial.print(',');
+    //Serial.print(LNGpreviousStateTime[4]);Serial.print(',');
+    //Serial.print(LNGpreviousStateTime[5]);Serial.print(". Pointer: "); 
+    //Serial.println(intPreviousStatePointer);
 		booHasReadEdge = true;
 		return true;
 	}else{return false;}
@@ -82,6 +82,23 @@ unsigned long ezButton::getCount(void) {
 
 void ezButton::resetCount(void) {
 	lngCount = 0;
+}
+
+// theres a much cleaner way to do this with math!
+// the assumption is the offsets will be small.
+// please make this better.
+int ezButton::getArrayPointer(int pointerOffset){ 
+  int temp = 0;
+  temp = intPreviousStatePointer + pointerOffset;
+  if (temp < 0){temp += 6*(temp%6);}
+  else {temp -= 6*(temp%6);}
+  //Serial.print("New Pointer Position: "); Serial.println(temp);
+  return temp;
+}
+
+bool ezButton::getTripleTap(void){
+  if (getDoubleTap() && LNGpreviousStateTime[getArrayPointer(-2)] < lngDoubleTapGapThreshold){return true;}
+  else {return false;}
 }
 
 bool ezButton::getDoubleTap(void){

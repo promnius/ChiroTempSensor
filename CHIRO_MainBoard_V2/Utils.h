@@ -6,6 +6,25 @@
 #include <Arduino.h>
 #include "GlobalVariables.h"
 #include <ADC.h>
+#include <EEPROM.h>
+
+void printCalibrationOffsets(){
+  Serial.print("Calibrated Differential Offset (external ADC): "); Serial.print(fltADCDiffOffset); Serial.println("uV");
+  Serial.print("Calibrated Differential Offset (internal ADC + amp): "); Serial.print(fltADCDiffOffsetAmp); Serial.println("uV");
+}
+
+void loadCalibration(){
+  EEPROM.get(120, fltADCDiffOffset);
+  EEPROM.get(130, fltADCDiffOffsetAmp);
+  Serial.println("Loading Sensor Calibration Offsets!");
+  printCalibrationOffsets();
+}
+
+void saveCalibration(){
+  Serial.println("Saving Sensor Calibration Offsets!");
+  EEPROM.put(120, fltADCDiffOffset);
+  EEPROM.put(130, fltADCDiffOffsetAmp);  
+}
 
 void updateHeartbeat(){
   if (millis() - lngHeartbeatTimer > 1000){
@@ -110,9 +129,9 @@ void calibrateSensorOffsets(){
   }
   fltADCDiffOffset = fltTempDiffAve;
   fltADCDiffOffsetAmp = fltTempDiffAveAmp;
-  Serial.print("Calibrated Differential Offset (external ADC): "); Serial.print(fltADCDiffOffset); Serial.println("uV");
-  Serial.print("Calibrated Differential Offset (internal ADC + amp): "); Serial.print(fltADCDiffOffsetAmp); Serial.println("uV");
+  printCalibrationOffsets();
   delay(500);
+  saveCalibration();
 }
 
 void checkButtons(){
@@ -123,7 +142,9 @@ void checkButtons(){
     Serial.println("Mode Button Pressed!");
     booCheckButtonHeld = true;
     if (modeButton.getDoubleTap() == true){
-      Serial.println("Double tap detected, running calibration routine!");
+      Serial.println("Double tap detected, running calibration routine! (and backing up 2 modes)");
+      intMode -= 1;  if (intMode < 0){intMode = 7;}
+      intMode -= 1;  if (intMode < 0){intMode = 7;}
       calibrateSensorOffsets();
     }
   }

@@ -30,6 +30,7 @@ class ezButton
     int intPreviousStatePointer;
 		unsigned long lngLastTransistionTime; // the last time the output pin was toggled. NOTE this is not natively a duration like
 			// lngPreviousStateTime, but rather a timestamp. 
+    int getArrayPointer(int pointerOffset);
 
 	public:
 		ezButton(int pin);
@@ -50,6 +51,7 @@ class ezButton
 		void update(void);
     bool getDoubleTap(void);
     void setDoupleTapThreshold(int thresh);
+    bool getTripleTap(void);
 };
 
 #endif
