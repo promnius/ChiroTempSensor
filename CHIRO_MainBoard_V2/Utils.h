@@ -142,6 +142,9 @@ void calibrateSensorOffsets(){
 
 void checkButtons(){
   modeButton.update();
+  Serial.print("Button state: "); Serial.print(modeButton.getState()); Serial.print(", Duration: "); Serial.print(modeButton.getStateTime());
+  Serial.print(", LastStateTime: "); Serial.print(modeButton.getLastTransitionTime()); Serial.print(", millis(): "); Serial.print(millis());
+  Serial.println();
   if (modeButton.getPressingEdge()==true){ // button pressed!
     lngShutOffTimer = millis(); // reset the turn-off timer, since we just used a button
     intMode += 1; if (intMode > 7){intMode = 0;}
@@ -161,7 +164,7 @@ void checkButtons(){
     intMode -= 1;  if (intMode < 0){intMode = 7;}
   }
   if (modeButton.getStateTime() > 4000 && modeButton.getState() == 1){
-    Serial.println("WE ARE TURNING OFF");
+    Serial.println("BUTTON HELD, WE ARE TURNING OFF");
     digitalWrite(pinSTAYON, LOW); // shut off, not reversible without human interaction
   }
   if (modeButton.getState() == 0){booCheckButtonHeld = false;}
@@ -182,7 +185,7 @@ void checkBatteryLevel(){
 }
 
 void checkShutOffConditions(){
-  if (fltBatSense < 2.95){digitalWrite(pinSTAYON, LOW);} // shut off, not reversible without human interaction
+  if (fltBatSense < 2.95){Serial.println("LOW BATTERY, WE ARE TURNING OFF"); digitalWrite(pinSTAYON, LOW);} // shut off, not reversible without human interaction
 }
 
 #endif

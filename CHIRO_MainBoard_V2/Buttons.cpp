@@ -6,6 +6,7 @@
 #include "Buttons.h"
 
 ezButton::ezButton(int pin) {
+  //lngBACKUP = 0;
   intPreviousStatePointer = 0;
 	btnPin = pin;
 	lngDebounceTime = 40;
@@ -17,7 +18,8 @@ ezButton::ezButton(int pin) {
   intInversion = LOW_PRESSED;
 
   for (int i = 0; i < 6; i ++){LNGpreviousStateTime[i] = 0;}
-  
+
+  Serial.println("UPDATING lngLastTransistionTime BASED ON NEW MILLIS VALUE (INIT)");
 	lngLastTransistionTime = millis();
 
 	pinMode(btnPin, INPUT_PULLUP);
@@ -36,6 +38,10 @@ int ezButton::getState(void) {
 
 unsigned long ezButton::getStateTime(void) {
 	return (millis() - lngLastTransistionTime);
+}
+
+unsigned long ezButton::getLastTransitionTime(void) {
+  return (lngLastTransistionTime);
 }
 
 unsigned long ezButton::getLastStateTime(void) {
@@ -119,9 +125,11 @@ void ezButton::update(void) {
 	// since the last press to ignore any noise:
 
 	// If the switch/button changed, and the time has been long enough
+  //lngBACKUP = lngLastTransistionTime;
 	if (intRawState != intState && (millis() - lngLastTransistionTime)>lngDebounceTime) {
     intPreviousStatePointer ++; if (intPreviousStatePointer > 5){intPreviousStatePointer = 0;}
 		LNGpreviousStateTime[intPreviousStatePointer] = millis() - lngLastTransistionTime;
+    Serial.println("UPDATING lngLastTransistionTime BASED ON NEW MILLIS VALUE");
 		lngLastTransistionTime = millis();
 		booHasReadEdge = false;
 		intState = intRawState;
@@ -129,4 +137,7 @@ void ezButton::update(void) {
 		else if(intCountMode == COUNT_PRESSING && intState == 1){lngCount++;} // intState==1 means we just pressed
 		else if(intCountMode == COUNT_RELEASING && intState == 0){lngCount++;}
 	}
+ //if(lngBACKUP != lngLastTransistionTime){
+ //  Serial.println("ERROR? EVALUATING IF STATEMENT BROKE THINGS?");
+ //}
 }

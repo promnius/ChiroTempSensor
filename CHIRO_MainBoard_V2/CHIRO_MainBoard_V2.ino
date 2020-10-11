@@ -50,7 +50,8 @@ void setup() {
 
 void loop() {
   lngLoopTimerStart = millis();
-  if (millis() - lngShutOffTimer > 300000){ // 5 minutes
+  if (millis() - lngShutOffTimer > 300000){ // 5 minutes // 500 minutes
+    Serial.println("TIME LIMIT REACHED, WE ARE TURNING OFF");
     digitalWrite(pinSTAYON, LOW); // shut off, not reversible without human interaction
   }
 
@@ -138,12 +139,19 @@ void addNeedleGaugeChannel(float barGraphValue, int colorChannel){
 
 void updateLEDs(){
   leds.clear();
-  if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve*3.0, GREEN_CHANNEL);ledsSetChannel(25, GREEN_CHANNEL,intMaxBrightness);}
-  if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve, BLUE_CHANNEL);ledsSetChannel(25, BLUE_CHANNEL,intMaxBrightness);}
-  if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/3.0, RED_CHANNEL);ledsSetChannel(25, RED_CHANNEL,intMaxBrightness);}
-  if (intMode == 4 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp*3.0, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
-  if (intMode == 5 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
-  if (intMode == 6 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp/3.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
+  //if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve*3.0, GREEN_CHANNEL);ledsSetChannel(25, GREEN_CHANNEL,intMaxBrightness);}
+  //if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve, BLUE_CHANNEL);ledsSetChannel(25, BLUE_CHANNEL,intMaxBrightness);}
+  //if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/3.0, RED_CHANNEL);ledsSetChannel(25, RED_CHANNEL,intMaxBrightness);}
+  //if (intMode == 4 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp*3.0, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
+  //if (intMode == 5 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
+  //if (intMode == 6 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp/3.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
+
+  if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve, GREEN_CHANNEL);ledsSetChannel(25, GREEN_CHANNEL,intMaxBrightness);}
+  if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/3.0, BLUE_CHANNEL);ledsSetChannel(25, BLUE_CHANNEL,intMaxBrightness);}
+  if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/9.0, RED_CHANNEL);ledsSetChannel(25, RED_CHANNEL,intMaxBrightness);}
+  if (intMode == 4 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
+  if (intMode == 5 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp/3.0, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
+  if (intMode == 6 || intMode == 7){addNeedleGaugeChannel(fltTempDiffAveAmp/9.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
   gammaCorrect();
   leds.show();
   if (booModeAudio == true){digitalWrite(pinAUDIOLED,LOW);}
