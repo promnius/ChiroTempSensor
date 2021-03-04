@@ -1,11 +1,11 @@
 
 Doctor unit assembly list:
-3d Print housing/ probe heads. 9 hrs total print time per unit, can make multiple on bed
+3d Print housing/ probe heads. 8 hrs total print time per unit, can make multiple on bed
 drill and tap housing
 drill probe heads, sand/ buff probe heads (dremel?).
 cut, debur probe tubes. squish and drill if needed
 build thermocouple probe heads- bend, cut, solder thermocouples, install in probe head, glue, extend with flexible wire
-If needed, heat stake probe head into squished tube for floating head. also solder in spring and spring extension
+If needed, heat stake probe head into tube for floating head.
 laser cut lids, debur
 laser cut delrin clamp
 order circuit boards, final assembly (buzzer, battery, buttons if not SM verison)
@@ -14,17 +14,16 @@ final assembly: install probe heads in tubes, tubes in housing, battery/board in
 functional FAT test/ calibration
 
 
+Measured timings:
+thermocouples: 45 in 2 hours
+Tubes: 6 tubes cut (bandsaw), turned, and ground in 1 hour. NOT drilled. Note this will be much faster with a metal chopsaw.
+drill and tap 1 housing (housing only), 30 minutes? need more data points
+drilling tubes: slow, needs some thinking
+assemble 5x probe head (drill out 3d prints, install thermocouples, solder thermocouples and extension wire, paint nail polish) 10 minutes each
+
+
 Todo:
 better print geometry for less cleanup?
-redesign circuit board for ATMEGA and USB B
-redesign cup for new plug
-redesign probe tip with heat stake hole in the right place and the right size
-better way to sand/ buff probe heads? worth printing at .07?
-can probe heads be printed with a hole size that doesn't require drilling?
-jig for squishing tube/some sort of jig for drilling tube? 3D printed? something that goes in tube as a counter force, and goes under tube to keep it level, and over tube with a hole for alignment?
-jig for soldering thermocouples (laser cut)
-jig for heat staking?? what would this even look like?
-
 
 Stock materials:
 metal tube (2 sizes- stainless vs aluminum?)
