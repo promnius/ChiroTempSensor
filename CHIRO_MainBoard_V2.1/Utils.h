@@ -42,17 +42,29 @@ void configureADCs(){
   // (which is set in number of adc clocks), as well as how fast the conversion clock runs.
   // Resolution *MAY* influence how many adc clocks are needed to make a conversion. 
   // Averaging is how many samples to take and average.
-  adc->setReference(ADC_REFERENCE::REF_3V3, ADC_0); // options are: ADC_REFERENCE::REF_3V3, ADC_REFERENCE::REF_EXT, or ADC_REFERENCE::REF_1V2.
-  adc->setSamplingSpeed(ADC_SAMPLING_SPEED::LOW_SPEED); // options are VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED or VERY_HIGH_SPEED.
-  adc->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED); // options are VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED_16BITS, HIGH_SPEED or VERY_HIGH_SPEED. VERY_HIGH_SPEED may be out of specs
-  adc->setAveraging(64); // set number of averages
-  adc->setResolution(intADCResolution); // set number of bits 
+  //adc->setReference(ADC_REFERENCE::REF_3V3, ADC_0); // options are: ADC_REFERENCE::REF_3V3, ADC_REFERENCE::REF_EXT, or ADC_REFERENCE::REF_1V2.
+  //adc->setSamplingSpeed(ADC_SAMPLING_SPEED::LOW_SPEED); // options are VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED or VERY_HIGH_SPEED.
+  //adc->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED); // options are VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED_16BITS, HIGH_SPEED or VERY_HIGH_SPEED. VERY_HIGH_SPEED may be out of specs
+  //adc->setAveraging(64); // set number of averages
+  //adc->setResolution(intADCResolution); // set number of bits 
 
-  adc->setReference(ADC_REFERENCE::REF_3V3, ADC_1);
-  adc->setSamplingSpeed(ADC_SAMPLING_SPEED::LOW_SPEED, ADC_1);
-  adc->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED, ADC_1);
-  adc->setAveraging(64, ADC_1); 
-  adc->setResolution(intADCResolution, ADC_1);  
+  //adc->setReference(ADC_REFERENCE::REF_3V3, ADC_1);
+  //adc->setSamplingSpeed(ADC_SAMPLING_SPEED::LOW_SPEED, ADC_1);
+  //adc->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED, ADC_1);
+  //adc->setAveraging(64, ADC_1); 
+  //adc->setResolution(intADCResolution, ADC_1);  
+
+  adc->adc0->setReference(ADC_REFERENCE::REF_3V3); // options are: ADC_REFERENCE::REF_3V3, ADC_REFERENCE::REF_EXT, or ADC_REFERENCE::REF_1V2.
+  adc->adc0->setSamplingSpeed(ADC_SAMPLING_SPEED::LOW_SPEED); // options are VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED or VERY_HIGH_SPEED.
+  adc->adc0->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED); // options are VERY_LOW_SPEED, LOW_SPEED, MED_SPEED, HIGH_SPEED_16BITS, HIGH_SPEED or VERY_HIGH_SPEED. VERY_HIGH_SPEED may be out of specs
+  adc->adc0->setAveraging(64); // set number of averages
+  adc->adc0->setResolution(intADCResolution); // set number of bits 
+
+  adc->adc1->setReference(ADC_REFERENCE::REF_3V3);
+  adc->adc1->setSamplingSpeed(ADC_SAMPLING_SPEED::LOW_SPEED);
+  adc->adc1->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED);
+  adc->adc1->setAveraging(64); 
+  adc->adc1->setResolution(intADCResolution);  
 }
 
 //float convertADCToMicroV(int32_t i32data)

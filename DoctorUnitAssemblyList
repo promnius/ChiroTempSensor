@@ -1,11 +1,38 @@
 
 Doctor unit assembly list:
-3d Print housing/ probe heads
-drill and tap housing and probe heads
-cut, debur probe tubes
-build thermocouple probe heads
+3d Print housing/ probe heads. 9 hrs total print time per unit, can make multiple on bed
+drill and tap housing
+drill probe heads, sand/ buff probe heads (dremel?).
+cut, debur probe tubes. squish and drill if needed
+build thermocouple probe heads- bend, cut, solder thermocouples, install in probe head, glue, extend with flexible wire
+If needed, heat stake probe head into squished tube for floating head. also solder in spring and spring extension
 laser cut lids, debur
+laser cut delrin clamp
 order circuit boards, final assembly (buzzer, battery, buttons if not SM verison)
 program board
-final assembly: install probe heads in tubes, tubes in housing, battery/board in housing, lid on, screws in.
-functional FAT test.
+final assembly: install probe heads in tubes, tubes in housing, battery/board in housing, lid on, screws in, clamp screwed in. solder in thermocouples
+functional FAT test/ calibration
+
+
+Todo:
+better print geometry for less cleanup?
+redesign circuit board for ATMEGA and USB B
+redesign cup for new plug
+redesign probe tip with heat stake hole in the right place and the right size
+better way to sand/ buff probe heads? worth printing at .07?
+can probe heads be printed with a hole size that doesn't require drilling?
+jig for squishing tube/some sort of jig for drilling tube? 3D printed? something that goes in tube as a counter force, and goes under tube to keep it level, and over tube with a hole for alignment?
+jig for soldering thermocouples (laser cut)
+jig for heat staking?? what would this even look like?
+
+
+Stock materials:
+metal tube (2 sizes- stainless vs aluminum?)
+3D printer filament- PETG or ASA
+thermocouple wire
+circuit boards/ missing parts
+	- batterys, buzzers, USB connectors
+fasteners- 6-32 and 0-80
+thumbscrew
+delrin sheets (or scrap)
+springs

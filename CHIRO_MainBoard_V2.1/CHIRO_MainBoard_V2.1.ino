@@ -157,9 +157,17 @@ void updateLEDs(){
   //if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve, GREEN_CHANNEL);ledsSetChannel(25, GREEN_CHANNEL,intMaxBrightness);}
   //if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/3.0, BLUE_CHANNEL);ledsSetChannel(25, BLUE_CHANNEL,intMaxBrightness);}
   //if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAve/9.0, RED_CHANNEL);ledsSetChannel(25, RED_CHANNEL,intMaxBrightness);}
+
+  // For Type E
   if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAveAmp/3.0, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
   if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAveAmp/9.0, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
   if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAveAmp/18.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
+
+  // for type T
+  //if (intMode == 2 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAveAmp/1.66, GREEN_CHANNEL);ledsSetChannel(26, GREEN_CHANNEL,intMaxBrightness);}
+  //if (intMode == 0 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAveAmp/5.0, BLUE_CHANNEL);ledsSetChannel(26, BLUE_CHANNEL,intMaxBrightness);}
+  //if (intMode == 1 || intMode == 3){addNeedleGaugeChannel(fltTempDiffAveAmp/10.0, RED_CHANNEL);ledsSetChannel(26, RED_CHANNEL,intMaxBrightness);}
+  
   if (booLowBatLEDState == true){ledsSetChannel(25, RED_CHANNEL,intMaxBrightness);}
   gammaCorrect();
   leds.show();
